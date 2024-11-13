@@ -33,6 +33,7 @@ let constraints = {
         width:{min:640, ideal:1920, max:1920},
         height:{min:480, ideal:1080, max:1080},
     },
+    video:true,
     audio:true
 }
 
@@ -95,10 +96,11 @@ let createPeerConnection = async (MemberId) => {
     document.getElementById('user-1').classList.add('smallFrame')
 
 
-    if(!localStream){
-        localStream = await navigator.mediaDevices.getUserMedia({video:true, audio:false})
-        document.getElementById('user-1').srcObject = localStream
+    if (!localStream) {
+        localStream = await navigator.mediaDevices.getUserMedia(constraints); // Use the same constraints as before
+        document.getElementById('user-1').srcObject = localStream;
     }
+    
 
     localStream.getTracks().forEach((track) => {
         peerConnection.addTrack(track, localStream)
@@ -106,6 +108,7 @@ let createPeerConnection = async (MemberId) => {
 
     peerConnection.ontrack = (event) => {
         event.streams[0].getTracks().forEach((track) => {
+            console.log(event.streams[0].getTracks());
             remoteStream.addTrack(track)
         })
     }
@@ -153,6 +156,7 @@ let leaveChannel = async () => {
 
 let toggleCamera = async () => {
     let videoTrack = localStream.getTracks().find(track => track.kind === 'video')
+    console.log('Video track enabled:', videoTrack.enabled); 
 
     if(videoTrack.enabled){
         videoTrack.enabled = false
